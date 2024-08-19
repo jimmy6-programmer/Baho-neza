@@ -1,0 +1,125 @@
+<?php
+session_start();
+include 'config.php';
+$mssg = "";
+if (!empty($_SESSION['username'])) {
+    $name = $_SESSION['username'];
+}else{
+    header('location:index.php');
+}
+
+if (isset($_POST['add'])) {
+    $name = $_POST['name'];
+    $quantity = $_POST['imported_quantity'];
+    $u_price = $_POST['unit_price'];
+    $total = $quantity * $u_price;
+
+    $sql = mysqli_query($db,"INSERT INTO raw_material (name,imported_quantity,unit_price,total_price) 
+    VALUES ('$name','$quantity','$u_price','$total')");
+    if ($sql) {
+        $mssg = "Product Added";
+    }
+}
+?>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="Font-Awesome-6.x/css/all.min.css">
+</head>
+<body>
+        <!-- Navbar starts here -->
+<nav class="navbar navbar-expand-sm navbar-dark bg-success">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="dashboard.php">BAHO-NEZA FOOD LTD</a>
+    <div class="collapse navbar-collapse mx-5" id="mynavbar">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link text-light" href="#">Raw Materials</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Extraction</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Milled Products</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Final Products</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Shipment</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Sales</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="logout.php" style="color:rgba(211, 25, 25, 0.765);"><i class="fas fa-user" style="margin-left:120px;color:red;"></i>Logout</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<!-- Navbar ends here -->
+
+<div class="form-table">
+    <div class="add-form">
+        <h4 class="form-head">ADD PRODUCT</h4><br>
+        <p class="success-mssg"><?php echo $mssg; ?></p>
+        <script>
+            setTimeout(() => {
+                $(".success-mssg").alert("close");
+            }, 3000);
+        </script>
+        <form action="" class="" method="post">
+            <label for="" class="labels">Name Of The Product</label>
+            <input type="text" name="name" placeholder="Enter a product name..." class="form-control" required>
+            <label for="" class="labels">Imported quantity</label>
+            <input type="number" name="imported_quantity" placeholder="Enter quantity(KG)..." class="form-control" required>
+            <label for="" class="labels">Unit Price</label>
+            <input type="number" name="unit_price" placeholder="Enter a product unit price..." class="form-control" required><br>
+            <input type="submit" name="add" class="add-product-btn" value="Add Product">
+        </form>
+    </div>
+    <div class="table-data">
+        <div class="table-responsive mt-3">            
+        <table class="table table-success table-hover">
+            <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Imported Quantity</th>
+                <th>Unit Price</th>
+                <th>Total Price</th>
+                <th colspan="2">Operations</th>
+            </tr>
+            </thead>
+            <tbody>
+                <?php
+                $qry = mysqli_query($db,"SELECT * FROM raw_material");
+                while ($row = mysqli_fetch_array($qry)) { ?>
+                <tr>
+                    <td><?php echo $row['name']; ?></td>
+                    <td><?php echo $row['imported_quantity']; ?></td>
+                    <td><?php echo $row['unit_price']; ?></td>
+                    <td><?php echo $row['total_price']; ?></td>
+                    <td>
+                        <a href="update_raw.php?raw_id='<?php echo $row['raw_id']; ?>'" style="margin-left:10px;"><i class="fas fa-pen"></i></a>
+                        <a href="delete_raw.php?raw_id='<?php echo $row['raw_id']; ?>'" style="margin-left:20px;color:red;"><i class="fas fa-trash-can"></i></a>
+                    </td>
+                </tr>      
+                <?php }
+                ?>
+            </tbody>
+        </table>
+        </div>
+
+    </div>
+</div>
+
+<script src="bootstrap.min.js"></script>
+
+
+</body>
+</html>
